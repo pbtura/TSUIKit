@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		522DA58F19CB534A0049E3F0 /* TSColumnData.m in Sources */ = {isa = PBXBuildFile; fileRef = 522DA58E19CB534A0049E3F0 /* TSColumnData.m */; };
 		F6141E2D17C58462003455EB /* TSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A4C47917BD1F6000AA8195 /* TSTableViewController.m */; };
 		F6141E2E17C58480003455EB /* TSTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F6A4C47B17BD1F6000AA8195 /* TSTableViewController.xib */; };
 		F6141E2F17C58480003455EB /* TSTableViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = F6A4C47E17BD1F6000AA8195 /* TSTableViewController~ipad.xib */; };
@@ -474,6 +475,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		522DA58E19CB534A0049E3F0 /* TSColumnData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSColumnData.m; sourceTree = "<group>"; };
+		522DA59019CB53760049E3F0 /* TSColumnData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSColumnData.h; sourceTree = "<group>"; };
 		F6141EC417C6A64C003455EB /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		F6141EC717C6A64C003455EB /* TSDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSDefines.h; sourceTree = "<group>"; };
 		F6141EC817C6A64C003455EB /* TSUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUtils.h; sourceTree = "<group>"; };
@@ -807,6 +810,8 @@
 				F6141EE017C6A64C003455EB /* TSTableViewHeaderSection.m */,
 				F6141EE117C6A64C003455EB /* TSTableViewRow.h */,
 				F6141EE217C6A64C003455EB /* TSTableViewRow.m */,
+				522DA58E19CB534A0049E3F0 /* TSColumnData.m */,
+				522DA59019CB53760049E3F0 /* TSColumnData.h */,
 			);
 			path = Private;
 			sourceTree = "<group>";
@@ -1687,6 +1692,7 @@
 				F6141F3117C6A64C003455EB /* TSTableView.m in Sources */,
 				F6141F3617C6A64C003455EB /* TSTableViewCell.m in Sources */,
 				F6141F3B17C6A64C003455EB /* TSTableViewHeaderSectionView.m in Sources */,
+				522DA58F19CB534A0049E3F0 /* TSColumnData.m in Sources */,
 				F6141F4017C6A64C003455EB /* TSTableViewModel.m in Sources */,
 				F6141F4517C6A64C003455EB /* TSTabView.m in Sources */,
 				F6141F4A17C6A64C003455EB /* TSTabViewModel.m in Sources */,
@@ -2120,6 +2126,7 @@
 				F63D2F1717CE48F900515A24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F680D29C1774B9C3005ACD94 /* Build configuration list for PBXNativeTarget "TabViewTest" */ = {
 			isa = XCConfigurationList;

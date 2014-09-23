@@ -226,6 +226,23 @@
 - (NSIndexPath *)pathToSelectedColumn;
 
 /**
+ @abstract Return total width of the table
+ */
+- (CGFloat)tableTotalWidth;
+
+/**
+ @abstract Return total width of all columns
+ */
+- (CGFloat)columnsTotalWidth;
+
+/**
+ @abstract Return maximum width of the column
+ */
+- (CGFloat)maximalWidthForColumnAtIndex:(NSInteger)index;
+
+- (CGFloat)widthForColumnAtIndex:(NSInteger)columnIndex;
+
+/**
     @abstract Modify content
  */
 - (void)insertRowAtPath:(NSIndexPath *)path animated:(BOOL)animated;
