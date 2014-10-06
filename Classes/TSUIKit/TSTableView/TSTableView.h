@@ -62,6 +62,7 @@
 
 @property (nonatomic, weak) id<TSTableViewDataSource> dataSource;
 @property (nonatomic, weak) id<TSTableViewDelegate> delegate;
+@property (nonatomic) BOOL autoAdjustColumns;
 
 /**
     @abstract Maximum nesting level in rows hierarchy
@@ -239,6 +240,11 @@
  @abstract Return maximum width of the column
  */
 - (CGFloat)maximalWidthForColumnAtIndex:(NSInteger)index;
+
+/**
+ @abstract Return minimum width of the column
+ */
+- (CGFloat)minimalWidthForColumnAtIndex:(NSInteger)index;
 
 - (CGFloat)widthForColumnAtIndex:(NSInteger)columnIndex;
 

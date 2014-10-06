@@ -107,6 +107,7 @@
 {
     VerboseLog();
     columnsUpdating = NO;
+    self.autoAdjustColumns = NO;
     self.backgroundColor = [UIColor blackColor];
     
     _lineNumbersColor = [UIColor blackColor];
@@ -319,48 +320,47 @@
         _topLeftCornerBackgroundImageView.hidden = _tableControlPanel.hidden || _tableHeader.hidden;
         _topLeftCornerBackgroundImageView.frame = CGRectMake(0, 0, _tableControlPanel.frame.size.width, _tableHeader.frame.size.height);
     }
-    if(columnsUpdating==NO)
+    if(columnsUpdating==NO && self.autoAdjustColumns == YES)
     {
-        [self adjustColumnWidths];
+        [self adjustColumnWidths:controlPanleWidth];
     }
    
 }
 
--(NSMutableArray *)buildColumnsData
+-(NSMutableArray *)buildColumnsData:(NSString *)propertyString
 {
     NSMutableArray *columnsData = [[NSMutableArray alloc ]initWithCapacity: [self.dataSource numberOfColumns]];
 
     for(int i = 0; i < [self.dataSource numberOfColumns];  ++i)
     {
         TSColumnData *data = [[TSColumnData alloc] initFromTable:self atIndex:i];
-        if( data.availableWidth > 0)
+        if( [data valueForKey:propertyString] > 0)
         {
             [columnsData addObject:data];
         }
     }
     
-    NSSortDescriptor *sortDesc = [NSSortDescriptor sortDescriptorWithKey:@"availableWidth" ascending:YES];
+    NSSortDescriptor *sortDesc = [NSSortDescriptor sortDescriptorWithKey:propertyString ascending:YES];
     [columnsData sortUsingDescriptors:@[sortDesc]];
     return columnsData;
 }
 
--(void)adjustColumnWidths
+-(void)adjustColumnWidths:(CGFloat) controlPanelWidth
 {
     if( [self.dataSource numberOfColumns] > 0 )
     {
         columnsUpdating = YES;
         //Try to resize the columns to better fit the width of the parent container.
-        CGFloat tWidth = [self tableTotalWidth];
+        CGFloat tWidth = [self tableTotalWidth] + controlPanelWidth;
         CGFloat parentWidth = self.superview.frame.size.width;
         if(tWidth < parentWidth)
         {
             CGFloat widthDelta = parentWidth - tWidth;
             NSMutableDictionary *columnChanges = [[NSMutableDictionary alloc ]initWithCapacity: [self.dataSource numberOfColumns]];
-            NSMutableArray *columnData = [self buildColumnsData];
-            [self adjustColumnWidths:widthDelta intoDictionary:columnChanges fromColumnData:columnData];
+            NSMutableArray *columnData = [self buildColumnsData:@"availableWidthIncrease"];
+            [self increaseColumnWidths:widthDelta intoDictionary:columnChanges fromColumnData:columnData];
             [columnChanges enumerateKeysAndObjectsUsingBlock:^(id key, id adjustment, BOOL *stop) {
                 
-                //TODO: need to call 'columnDidChange' to get the columns to match the header widths.
                 [self.tableHeader changeColumnWidthOnAmount:[adjustment floatValue] forColumn:[key integerValue] animated:YES];
                 [self tableViewHeader:self.tableHeader columnWidthDidChange:[key integerValue] oldWidth:[self widthForColumnAtIndex:[key integerValue]] newWidth:[self widthForColumnAtIndex:[key integerValue]] + [adjustment floatValue]];
                 
@@ -368,16 +368,30 @@
             }];
             
         }
+        else
+        {
+            CGFloat widthDelta = tWidth - parentWidth;
+            NSMutableDictionary *columnChanges = [[NSMutableDictionary alloc ]initWithCapacity: [self.dataSource numberOfColumns]];
+            NSMutableArray *columnData = [self buildColumnsData:@"availableWidthReduction"];
+            [self reduceColumnWidths:widthDelta intoDictionary:columnChanges fromColumnData:columnData];
+            [columnChanges enumerateKeysAndObjectsUsingBlock:^(id key, id adjustment, BOOL *stop) {
+                
+                [self.tableHeader changeColumnWidthOnAmount:[adjustment floatValue] *-1 forColumn:[key integerValue] animated:YES];
+                [self tableViewHeader:self.tableHeader columnWidthDidChange:[key integerValue] oldWidth:[self widthForColumnAtIndex:[key integerValue]] newWidth:[self widthForColumnAtIndex:[key integerValue]] - [adjustment floatValue]];
+                
+                
+            }];
+        }
         columnsUpdating = NO;
     }
 }
 
--(void)adjustColumnWidths:(CGFloat )remainingAdj intoDictionary:(NSMutableDictionary *)results fromColumnData:(NSMutableArray *)columnData
+-(void)increaseColumnWidths:(CGFloat )remainingAdj intoDictionary:(NSMutableDictionary *)results fromColumnData:(NSMutableArray *)columnData
 {
     
    if(columnData.count > 0)
    {
-       CGFloat leastAvailable = ((TSColumnData *)columnData[0]).availableWidth;
+       CGFloat leastAvailable = ((TSColumnData *)columnData[0]).availableWidthIncrease;
        CGFloat columnDelta = remainingAdj / (CGFloat) columnData.count;
        CGFloat adjustment = columnDelta < leastAvailable ? columnDelta : leastAvailable;
        NSMutableArray *copiedData = [[NSMutableArray alloc] initWithArray:columnData];
@@ -386,20 +400,50 @@
            TSColumnData *data = columnData[i];
            if(remainingAdj > 0)
            {
-               CGFloat amountAdjusted = [data adjustWidth:adjustment];
+               CGFloat amountAdjusted = [data increaseWidth:adjustment];
                remainingAdj -= amountAdjusted;
            }
-           if(data.availableWidth <=0 || remainingAdj <=0)
+           if(data.availableWidthIncrease <=0 || remainingAdj <=0)
            {
                [results setObject:@(data.totalAdjustment) forKey:[NSNumber numberWithInteger:data.index]];
                [copiedData removeObject:data];
            }
        }
        
-       [self adjustColumnWidths:remainingAdj intoDictionary:results fromColumnData:copiedData];
+       [self increaseColumnWidths:remainingAdj intoDictionary:results fromColumnData:copiedData];
    }
     
 
+}
+
+-(void)reduceColumnWidths:(CGFloat )remainingAdj intoDictionary:(NSMutableDictionary *)results fromColumnData:(NSMutableArray *)columnData
+{
+    
+    if(columnData.count > 0)
+    {
+        CGFloat leastAvailable = ((TSColumnData *)columnData[0]).availableWidthReduction;
+        CGFloat columnDelta = remainingAdj / (CGFloat) columnData.count;
+        CGFloat adjustment = columnDelta < leastAvailable ? columnDelta : leastAvailable;
+        NSMutableArray *copiedData = [[NSMutableArray alloc] initWithArray:columnData];
+        for(int i = 0; i < columnData.count;  ++i)
+        {
+            TSColumnData *data = columnData[i];
+            if(remainingAdj > 0)
+            {
+                CGFloat amountAdjusted = [data reduceWidth:adjustment];
+                remainingAdj -= amountAdjusted;
+            }
+            if(data.availableWidthReduction <=0 || remainingAdj <=0)
+            {
+                [results setObject:@(data.totalAdjustment) forKey:[NSNumber numberWithInteger:data.index]];
+                [copiedData removeObject:data];
+            }
+        }
+        
+        [self reduceColumnWidths:remainingAdj intoDictionary:results fromColumnData:copiedData];
+    }
+    
+    
 }
 
 -(void)layoutSubviews

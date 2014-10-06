@@ -10,11 +10,14 @@
 
 @property (nonatomic) NSInteger index;
 @property (nonatomic) CGFloat maxWidth;
+@property (nonatomic) CGFloat minWidth;
 @property (nonatomic) CGFloat currentWidth;
 @property (nonatomic) CGFloat totalAdjustment;
 
 -(instancetype) initFromTable:(TSTableView *) table atIndex:(NSInteger) index;
--(CGFloat) availableWidth;
--(CGFloat)adjustWidth:(CGFloat) adjustment;
+-(CGFloat) availableWidthIncrease;
+-(CGFloat) availableWidthReduction;
+-(CGFloat) increaseWidth:(CGFloat) adjustment;
+-(CGFloat) reduceWidth:(CGFloat) adjustment;
 
 @end
